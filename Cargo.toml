@@ -1,0 +1,17 @@
+[package]
+name = "aoc_2022"
+version = "0.0.1"
+
+[dependencies]
+cortex-m = "0.7.6"
+panic-halt = "0.2.0"
+cortex-m-semihosting = "0.5.0"
+cortex-m-rt = "<=0.7.2"
+
+[dependencies.rtt-target]
+version = "0.3.1"
+features = ["cortex-m"]
+
+[dependencies.stm32g0xx-hal]
+version = "0.1.5"
+features = ["rt", "stm32g070"]
