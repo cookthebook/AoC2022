@@ -1,16 +1,21 @@
-use rtt_target::DownChannel;
+use hal::prelude::*;
+use hal::serial::{FullConfig, Serial};
+use nb::block;
 
-pub fn readln(input: &mut DownChannel, buf: &mut [u8]) -> usize {
+pub fn readln(uart: &mut Serial<hal::stm32::USART1, FullConfig>, buf: &mut [u8]) -> usize {
     let mut p = 0;
 
     while p < buf.len() {
-        if input.read(&mut buf[p..(p+1)]) == 1 {
-            if buf[p] == b'\n' {
-                return p;
-            } else {
-                p += 1;
-            }
+        let byte = block!(uart.read()).unwrap();
+
+        if byte == b'\r' {
+            continue;
+        } else if byte == b'\n' {
+            break;
         }
+
+        buf[p] = byte;
+        p += 1;
     }
 
     return p;

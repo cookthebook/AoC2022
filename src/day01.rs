@@ -1,23 +1,22 @@
 use util::readln;
-use rtt_target::{UpChannel, DownChannel};
+use hal::serial::{FullConfig, Serial};
 use core::fmt::Write;
 
 use crate::util::strtoul;
 
-pub fn solve(input: &mut DownChannel, output: &mut UpChannel) {
+pub fn solve(uart: &mut Serial<hal::stm32::USART1, FullConfig>) {
     let mut buf = [0u8; 16];
     let mut max: u128 = 0;
     let mut cur: u128 = 0;
-    let mut pval = 0;
+    let mut plen = 0;
 
-    writeln!(output, "Read calory values until double newline").ok();
+    writeln!(uart, "Read calory values until double newline").ok();
 
     loop {
-        readln(input, &mut buf);
-        let val = strtoul(&buf, 10);
+        let rlen = readln(uart, &mut buf);
 
-        if val == 0 {
-            if pval == 0 {
+        if rlen == 0 {
+            if plen == 0 {
                 break;
             }
 
@@ -27,31 +26,30 @@ pub fn solve(input: &mut DownChannel, output: &mut UpChannel) {
 
             cur = 0;
         } else {
-            cur += val as u128;
+            cur += strtoul(&buf, 10) as u128;
         }
 
-        pval = val;
+        plen = rlen;
     }
 
-    writeln!(output, "Max calories: {}", max).ok();
+    writeln!(uart, "Max calories: {}", max).ok();
 }
 
-pub fn solve_star(input: &mut DownChannel, output: &mut UpChannel) {
+pub fn solve_star(uart: &mut Serial<hal::stm32::USART1, FullConfig>) {
     let mut buf = [0u8; 16];
     let mut max1: u128 = 0;
     let mut max2: u128 = 0;
     let mut max3: u128 = 0;
     let mut cur: u128 = 0;
-    let mut pval = 0;
+    let mut plen = 0;
 
-    writeln!(output, "Read calory values until double newline").ok();
+    writeln!(uart, "Read calory values until double newline").ok();
 
     loop {
-        readln(input, &mut buf);
-        let val = strtoul(&buf, 10);
+        let rlen = readln(uart, &mut buf);
 
-        if val == 0 {
-            if pval == 0 {
+        if rlen == 0 {
+            if plen == 0 {
                 break;
             }
 
@@ -61,19 +59,19 @@ pub fn solve_star(input: &mut DownChannel, output: &mut UpChannel) {
                 max1 = cur;
             } else if cur > max2 {
                 max3 = max2;
-                max2 = cur;
+                max2 = cur
             } else if cur > max3 {
                 max3 = cur;
             }
 
             cur = 0;
         } else {
-            cur += val as u128;
+            cur += strtoul(&buf, 10) as u128;
         }
 
-        pval = val;
+        plen = rlen;
     }
 
-    writeln!(output, "Max calories: {}, {}, {}", max1, max2, max3).ok();
-    writeln!(output, "Total: {}", max1+max2+max3).ok();
+    writeln!(uart, "Max calories: {}, {}, {}", max1, max2, max3).ok();
+    writeln!(uart, "Total: {}", max1+max2+max3).ok();
 }
