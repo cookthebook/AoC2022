@@ -74,26 +74,34 @@ fn ask_chal(uart: &mut Serial<hal::stm32::USART1, FullConfig>) {
 #[allow(clippy::empty_loop)]
 #[entry]
 fn main() -> ! {
+    let cp = cortex_m::Peripherals::take().expect("cannot take core peripherals");
     let dp = stm32::Peripherals::take().expect("cannot take peripherals");
     let mut rcc = dp.RCC.constrain();
+
+    let periphs: util::CorePerphs;
+
+    /* setup hardware timer */
+    periphs.timer = dp.TIM17.timer(&mut rcc);
+
+    /* setup UART interface */
     let gpioc = dp.GPIOC.split(&mut rcc);
-    let mut usart = dp.USART1.usart(
+    periphs.uart = dp.USART1.usart(
         gpioc.pc4, gpioc.pc5,
         FullConfig::default().baudrate(115200.bps()),
         &mut rcc
     ).unwrap();
 
 
-    write!(usart, "\r\n~~~ Advent of Code 2022 ~~~\r\n").ok();
-    write!(usart, "_________________________\r\n").ok();
-    write!(usart, "< Time to save Christmas! >\r\n").ok();
-    write!(usart, " -------------------------\r\n").ok();
-    write!(usart, "        \\\r\n").ok();
-    write!(usart, "         \\\r\n").ok();
-    write!(usart, "            _~^~^~_\r\n").ok();
-    write!(usart, "        \\) /  o o  \\ (/\r\n").ok();
-    write!(usart, "          '_   -   _'\r\n").ok();
-    write!(usart, "          / '-----' \\\r\n\r\n").ok();
+    write!(periphs.uart, "\r\n~~~ Advent of Code 2022 ~~~\r\n").ok();
+    write!(periphs.uart, "_________________________\r\n").ok();
+    write!(periphs.uart, "< Time to save Christmas! >\r\n").ok();
+    write!(periphs.uart, " -------------------------\r\n").ok();
+    write!(periphs.uart, "        \\\r\n").ok();
+    write!(periphs.uart, "         \\\r\n").ok();
+    write!(periphs.uart, "            _~^~^~_\r\n").ok();
+    write!(periphs.uart, "        \\) /  o o  \\ (/\r\n").ok();
+    write!(periphs.uart, "          '_   -   _'\r\n").ok();
+    write!(periphs.uart, "          / '-----' \\\r\n\r\n").ok();
     loop {
         ask_chal(&mut usart);
     }

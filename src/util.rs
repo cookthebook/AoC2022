@@ -2,6 +2,11 @@ use hal::prelude::*;
 use hal::serial::{FullConfig, Serial};
 use nb::block;
 
+pub struct CorePerphs {
+    pub uart: Serial<hal::stm32::USART1, FullConfig>,
+    pub timer: hal::timer::Timer<hal::stm32::TIM17>
+}
+
 /**
  * Fill a buffer with characters up until (but not including) a `\n`.
  * Any `\r` characters are ignored, and a 0 is written after the line.
