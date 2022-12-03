@@ -2,11 +2,28 @@ use hal::prelude::*;
 use hal::serial::{FullConfig, Serial};
 use nb::block;
 
+/**
+ * Fill a buffer with characters up until (but not including) a `\n`.
+ * Any `\r` characters are ignored, and a 0 is written after the line.
+ */
 pub fn readln(uart: &mut Serial<hal::stm32::USART1, FullConfig>, buf: &mut [u8]) -> usize {
     let mut p = 0;
 
-    while p < buf.len() {
-        let byte = block!(uart.read()).unwrap();
+    while p < (buf.len() - 1) {
+        let byte;
+        match uart.read() {
+            Err(nb::Error::Other(_err)) => {
+                continue;
+            },
+
+            Err(nb::Error::WouldBlock) => {
+                continue;
+            }
+
+            Ok(val) => {
+                byte = val;
+            }
+        }
 
         if byte == b'\r' {
             continue;
@@ -18,6 +35,7 @@ pub fn readln(uart: &mut Serial<hal::stm32::USART1, FullConfig>, buf: &mut [u8])
         p += 1;
     }
 
+    buf[p] = 0;
     return p;
 }
 
@@ -64,4 +82,22 @@ pub fn strtoul(buf: &[u8], base: u8) -> u64 {
     }
 
     return ret;
+}
+
+pub fn print_buf(
+    uart: &mut Serial<hal::stm32::USART1, FullConfig>,
+    buf: &[u8],
+    len: usize
+) {
+    let l;
+
+    if buf.len() < len {
+        l = buf.len();
+    } else {
+        l = len;
+    }
+
+    for i in 0..l {
+        block!(uart.write(buf[i])).ok();
+    }
 }

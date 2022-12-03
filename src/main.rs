@@ -19,46 +19,54 @@ use hal::stm32;
 mod util;
 mod day01;
 mod day02;
+mod day03;
 
-use util::{readln, strtoul};
+use util::{readln, strtoul, print_buf};
+
+fn print_help(uart: &mut Serial<hal::stm32::USART1, FullConfig>) {
+    write!(uart, "Input the day you wish to solve, followed by a \"*\" for the second half\r\n").ok();
+}
 
 fn ask_chal(uart: &mut Serial<hal::stm32::USART1, FullConfig>) {
     let mut buf = [0u8; 16];
+    let rlen: usize;
+    let selection: u64;
 
-    writeln!(uart, "Please select a day").ok();
+    write!(uart, "AoC 2022> ").ok();
+    rlen = readln(uart, &mut buf);
+    print_buf(uart, &buf, rlen);
+    write!(uart, "\r\n").ok();
 
-    let rlen = readln(uart, &mut buf);
-    let selection = strtoul(&buf, 10);
+    selection = strtoul(&buf, 10);
 
     match selection {
     1 => {
-        write!(uart, "You selected day 1").ok();
         if buf[1] == b'*' {
-            write!(uart, "*\r\n").ok();
             day01::solve_star(uart);
         } else {
-            write!(uart, "\r\n").ok();
             day01::solve(uart);
         }
     },
 
     2 => {
-        write!(uart, "You selected day 2").ok();
         if buf[1] == b'*' {
-            write!(uart, "*\r\n").ok();
             day02::solve_star(uart);
         } else {
-            write!(uart, "\r\n").ok();
             day02::solve(uart);
         }
     },
 
-    _ => {
-        write!(uart, "Invalid selection: ").ok();
-        for i in 0..rlen {
-            uart.write(buf[i]).ok();
+    3 => {
+        if buf[1] == b'*' {
+            day03::solve_star(uart);
+        } else {
+            day03::solve(uart);
         }
-        write!(uart, "\r\n").ok();
+    },
+
+    _ => {
+        write!(uart, "Invalid selection\r\n").ok();
+        print_help(uart);
     }
     }
 }
@@ -75,6 +83,17 @@ fn main() -> ! {
         &mut rcc
     ).unwrap();
 
+
+    write!(usart, "\r\n~~~ Advent of Code 2022 ~~~\r\n").ok();
+    write!(usart, "_________________________\r\n").ok();
+    write!(usart, "< Time to save Christmas! >\r\n").ok();
+    write!(usart, " -------------------------\r\n").ok();
+    write!(usart, "        \\\r\n").ok();
+    write!(usart, "         \\\r\n").ok();
+    write!(usart, "            _~^~^~_\r\n").ok();
+    write!(usart, "        \\) /  o o  \\ (/\r\n").ok();
+    write!(usart, "          '_   -   _'\r\n").ok();
+    write!(usart, "          / '-----' \\\r\n\r\n").ok();
     loop {
         ask_chal(&mut usart);
     }

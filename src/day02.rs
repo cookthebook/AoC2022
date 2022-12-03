@@ -2,13 +2,12 @@ use util::readln;
 use hal::serial::{FullConfig, Serial};
 use core::fmt::Write;
 
-use crate::util::strtoul;
-
 pub fn solve(uart: &mut Serial<hal::stm32::USART1, FullConfig>) {
     let mut buf = [0u8; 16];
     let mut score: u32 = 0;
 
-    writeln!(uart, "Read challenge until empty line").ok();
+    write!(uart, "=== Day 02, star ===\r\n\r\n").ok();
+    write!(uart, "Input challenge lines until empty line\r\n").ok();
 
     loop {
         let cnt = readln(uart, &mut buf);
@@ -65,7 +64,8 @@ pub fn solve_star(uart: &mut Serial<hal::stm32::USART1, FullConfig>) {
     let mut buf = [0u8; 16];
     let mut score: u32 = 0;
 
-    writeln!(uart, "Read challenge until empty line").ok();
+    write!(uart, "=== Day 02, star ===\r\n\r\n").ok();
+    write!(uart, "Input challenge lines until empty line\r\n").ok();
 
     loop {
         let cnt = readln(uart, &mut buf);

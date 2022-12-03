@@ -10,7 +10,8 @@ pub fn solve(uart: &mut Serial<hal::stm32::USART1, FullConfig>) {
     let mut cur: u128 = 0;
     let mut plen = 0;
 
-    writeln!(uart, "Read calory values until double newline").ok();
+    write!(uart, "=== Day 01, normal ===\r\n\r\n").ok();
+    write!(uart, "Gimme da calory values until double newline\r\n").ok();
 
     loop {
         let rlen = readln(uart, &mut buf);
@@ -43,7 +44,8 @@ pub fn solve_star(uart: &mut Serial<hal::stm32::USART1, FullConfig>) {
     let mut cur: u128 = 0;
     let mut plen = 0;
 
-    writeln!(uart, "Read calory values until double newline").ok();
+    write!(uart, "=== Day 01, star ===\r\n\r\n").ok();
+    write!(uart, "Gimme da calory values until double newline\r\n").ok();
 
     loop {
         let rlen = readln(uart, &mut buf);
