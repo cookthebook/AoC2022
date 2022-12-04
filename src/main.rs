@@ -17,56 +17,57 @@ use hal::serial::FullConfig;
 use hal::stm32;
 
 mod util;
+mod xmodem;
 mod day01;
 mod day02;
 mod day03;
 
 use util::{readln, strtoul, print_buf};
 
-fn print_help(uart: &mut Serial<hal::stm32::USART1, FullConfig>) {
-    write!(uart, "Input the day you wish to solve, followed by a \"*\" for the second half\r\n").ok();
+fn print_help(p: &mut util::CorePerphs) {
+    write!(p.uart, "Input the day you wish to solve, followed by a \"*\" for the second half\r\n").ok();
 }
 
-fn ask_chal(uart: &mut Serial<hal::stm32::USART1, FullConfig>) {
+fn ask_chal(p: &mut util::CorePerphs) {
     let mut buf = [0u8; 16];
     let rlen: usize;
     let selection: u64;
 
-    write!(uart, "AoC 2022> ").ok();
-    rlen = readln(uart, &mut buf);
-    print_buf(uart, &buf, rlen);
-    write!(uart, "\r\n").ok();
+    write!(p.uart, "AoC 2022> ").ok();
+    rlen = readln(&mut p.uart, &mut buf);
+    print_buf(&mut p.uart, &buf, rlen);
+    write!(&mut p.uart, "\r\n").ok();
 
     selection = strtoul(&buf, 10);
 
     match selection {
     1 => {
         if buf[1] == b'*' {
-            day01::solve_star(uart);
+            day01::solve_star(p);
         } else {
-            day01::solve(uart);
+            day01::solve(p);
         }
     },
 
     2 => {
         if buf[1] == b'*' {
-            day02::solve_star(uart);
+            day02::solve_star(&mut p.uart);
         } else {
-            day02::solve(uart);
+            day02::solve(&mut p.uart);
         }
     },
 
     3 => {
         if buf[1] == b'*' {
-            day03::solve_star(uart);
+            day03::solve_star(&mut p.uart);
         } else {
-            day03::solve(uart);
+            day03::solve(& mut p.uart);
         }
     },
 
     _ => {
-        write!(uart, "Invalid selection\r\n").ok();
-        print_help(uart);
+        write!(p.uart, "Invalid selection\r\n").ok();
+        print_help(p);
     }
     }
 }
@@ -81,7 +82,7 @@ fn main() -> ! {
     let periphs: util::CorePerphs;
 
     /* setup hardware timer */
-    periphs.timer = dp.TIM17.timer(&mut rcc);
+    periphs.watch = dp.TIM3.stopwatch(&mut rcc);
 
     /* setup UART interface */
     let gpioc = dp.GPIOC.split(&mut rcc);
@@ -90,7 +91,6 @@ fn main() -> ! {
         FullConfig::default().baudrate(115200.bps()),
         &mut rcc
     ).unwrap();
-
 
     write!(periphs.uart, "\r\n~~~ Advent of Code 2022 ~~~\r\n").ok();
     write!(periphs.uart, "_________________________\r\n").ok();
@@ -103,6 +103,6 @@ fn main() -> ! {
     write!(periphs.uart, "          '_   -   _'\r\n").ok();
     write!(periphs.uart, "          / '-----' \\\r\n\r\n").ok();
     loop {
-        ask_chal(&mut usart);
+        ask_chal(&mut p);
     }
 }

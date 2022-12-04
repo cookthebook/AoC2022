@@ -4,7 +4,7 @@ use nb::block;
 
 pub struct CorePerphs {
     pub uart: Serial<hal::stm32::USART1, FullConfig>,
-    pub timer: hal::timer::Timer<hal::stm32::TIM17>
+    pub watch: hal::timer::stopwatch::Stopwatch<hal::stm32::TIM3>
 }
 
 /**
