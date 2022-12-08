@@ -4,7 +4,7 @@ use nb::block;
 
 pub struct CorePerphs {
     pub uart: Serial<hal::stm32::USART1, FullConfig>,
-    pub watch: hal::timer::stopwatch::Stopwatch<hal::stm32::TIM3>
+    pub timer: hal::timer::Timer<hal::stm32::TIM17>
 }
 
 /**
@@ -44,7 +44,7 @@ pub fn readln(uart: &mut Serial<hal::stm32::USART1, FullConfig>, buf: &mut [u8])
     return p;
 }
 
-pub fn strtoul(buf: &[u8], base: u8) -> u64 {
+pub fn strtoul_len(buf: &[u8], base: u8) -> (u64, usize) {
     let mut p = 0;
     let mut ret: u64 = 0;
 
@@ -81,11 +81,16 @@ pub fn strtoul(buf: &[u8], base: u8) -> u64 {
             ret += h as u64;
             p += 1;
         }
-    }
+    },
 
     _ => {}
     }
 
+    return (ret, p);
+}
+
+pub fn strtoul(buf: &[u8], base: u8) -> u64 {
+    let (ret, _) = strtoul_len(buf, base);
     return ret;
 }
 
