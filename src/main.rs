@@ -25,6 +25,7 @@ mod day04;
 mod day05;
 mod day06;
 mod day07;
+mod day08;
 
 use util::{readln, strtoul, print_buf};
 
@@ -100,6 +101,14 @@ fn ask_chal(p: &mut util::CorePerphs) {
             day07::solve(p);
         }
     },
+
+    8 => {
+        if buf[1] == b'*' {
+            day08::solve_star(p);
+        } else {
+            day08::solve(p);
+        }
+    }
 
     _ => {
         write!(p.uart, "Invalid selection\r\n").ok();
