@@ -24,6 +24,7 @@ mod day03;
 mod day04;
 mod day05;
 mod day06;
+mod day07;
 
 use util::{readln, strtoul, print_buf};
 
@@ -89,6 +90,14 @@ fn ask_chal(p: &mut util::CorePerphs) {
             day06::solve_star(p);
         } else {
             day06::solve(p);
+        }
+    },
+
+    7 => {
+        if buf[1] == b'*' {
+            day07::solve_star(p);
+        } else {
+            day07::solve(p);
         }
     },
 

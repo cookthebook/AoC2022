@@ -111,3 +111,36 @@ pub fn print_buf(
         block!(uart.write(buf[i])).ok();
     }
 }
+
+pub fn print_buf_str(
+    uart: &mut Serial<hal::stm32::USART1, FullConfig>,
+    buf: &[u8]
+) {
+    for i in 0..buf.len() {
+        if buf[i] == 0 {
+            break;
+        }
+
+        block!(uart.write(buf[i])).ok();
+    }
+}
+
+pub fn buf_eq(b1: &[u8], b2: &[u8]) -> bool {
+    if b1.len() != b2.len() {
+        return false;
+    }
+
+    for i in 0..b1.len() {
+        if b1[i] != b2[i] {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+pub fn memcpy(dst: &mut [u8], src: &[u8], len: usize) {
+    for i in 0..len {
+        dst[i] = src[i];
+    }
+}
